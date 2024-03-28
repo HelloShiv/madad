@@ -10,7 +10,6 @@ export const LANGUAGE_VERSIONS = {
   befunge93: '0.2.0',
   bqn: '1.0.0',
   brachylog: '1.0.0',
-  brainfuck: '2.7.3',
   cjam: '0.6.5',
   clojure: '1.10.3',
   cobol: '3.1.2',
