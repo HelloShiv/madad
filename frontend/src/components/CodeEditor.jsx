@@ -15,6 +15,7 @@ import branchImage from '../assets/branch.png';
 import extensionImage from '../assets/extension.svg';
 import messageImage from '../assets/message.png';
 import Output from './Output';
+import { CODE_SNIPPETS } from '../constants';
 
 const CodeEditor = () => {
   const editorRef = useRef();
@@ -61,7 +62,7 @@ const CodeEditor = () => {
     'freebasic',
     'awk',
     'c',
-    'cpp',
+    'c++',
     'd',
     'fortran',
     'go',
@@ -109,10 +110,12 @@ const CodeEditor = () => {
   ];
 
   const [selectedLanguage, setSelectedLanguage] = useState('plaintext');
-
+  console.log('selected language ', selectedLanguage);
+  console.log(CODE_SNIPPETS[selectedLanguage]);
   // Event handler for when the language selection changes
   const handleLanguageChange = value => {
     setSelectedLanguage(value);
+    // console.log(value, 'selected');
   };
 
   return (
@@ -175,7 +178,8 @@ const CodeEditor = () => {
           <ResizablePanel>
             <Editor
               theme="vs-dark"
-              language="c"
+              language={selectedLanguage === 'c++' ? 'cpp' : selectedLanguage}
+              value={CODE_SNIPPETS[selectedLanguage]}
               options={editorOptions}
               onMount={onMount}
             ></Editor>
@@ -188,7 +192,7 @@ const CodeEditor = () => {
               </div>
               <div className="pl-2 text-slate-300 text-l">~/madad/ {'>'}</div>
               <Output editorRef={editorRef} language={selectedLanguage} />{' '}
-              
+              {/* Pass selected language to Output */}
             </div>
           </ResizablePanel>
         </ResizablePanelGroup>
