@@ -41,7 +41,6 @@ const CodeEditor = () => {
     'befunge93',
     'bqn',
     'brachylog',
-    'brainfuck',
     'cjam',
     'clojure',
     'cobol',
@@ -182,14 +181,14 @@ const CodeEditor = () => {
             ></Editor>
           </ResizablePanel>
           <ResizableHandle withHandle />
-          <ResizablePanel defaultSize={4} minSize={4}>
+          <ResizablePanel defaultSize={13} minSize={4}>
             <div>
               <div className="text-slate-50 p-2 w-screen flex flex-col bg-custom-terminal">
                 OUTPUT
               </div>
               <div className="pl-2 text-slate-300 text-l">~/madad/ {'>'}</div>
               <Output editorRef={editorRef} language={selectedLanguage} />{' '}
-              {/* Pass selected language to Output */}
+              
             </div>
           </ResizablePanel>
         </ResizablePanelGroup>

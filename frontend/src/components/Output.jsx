@@ -47,7 +47,7 @@ const Output = ({ editorRef, language }) => {
         type="primary"
         style={{ right: 24, bottom: 60, width: 60, height: 60 }}
         icon={isLoading ? <LoadingOutlined spin /> : <CaretRightFilled />}
-        tooltip={<div>Run</div>}
+        tooltip={<div>Run Code</div>}
         onClick={runCode}
       />
     </div>
