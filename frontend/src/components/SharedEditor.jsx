@@ -1,4 +1,4 @@
-import React, { useState ,useEffect , useRef} from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Editor } from '@monaco-editor/react';
 import { Select, ConfigProvider, notification, FloatButton } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
@@ -12,8 +12,7 @@ import messageImage from '../assets/message.png';
 import axios from 'axios';
 import { useParams } from 'react-router-dom'; // Import useParams hook to extract URL parameters
 
-
-const CodeEditor = () => {
+const SharedEditor = () => {
   const editorOptions = {
     fontSize: '18px',
     backgroundColor: '#f0f2f5',
@@ -132,15 +131,25 @@ const CodeEditor = () => {
 
   const fetchCodeSnippet = async () => {
     try {
-      console.log(shortId , " : shortID is")
+      console.log(shortId, ' : shortID is');
       const response = await axios.get(
         `${process.env.BACKEND_URL}/getcode/${shortId}`
       );
+      if (editorRef.current) {
+        editorRef.current.executeEdits(
+          [],
+          [
+            {
+              // Clear any existing content and set the new code
+              range: editorRef.current.getModel().getFullModelRange(),
+              text: response.data.code,
+            },
+          ]
+        );
+      }
+      console.log(response.data.language);
       setEditorCode(response.data.code);
-       if (editorRef.current) {
-         editorRef.current.setValue(response.data.code); // Set editor code using Monaco Editor instance
-       }
-      console.log(response.data.code)
+      setSelectedLanguage(response.data.language);
     } catch (error) {
       console.error('Error fetching code snippet:', error.message);
       notification.error({
@@ -234,9 +243,9 @@ const CodeEditor = () => {
         <Editor
           ref={editorRef}
           theme="vs-dark"
-          language={selectedLanguage} 
+          language={selectedLanguage}
           options={editorOptions}
-          onChange={(value) => setEditorCode(value)} // Update the editor code
+          value={editorCode}
         ></Editor>
 
         <FloatButton
@@ -252,4 +261,4 @@ const CodeEditor = () => {
   );
 };
 
-export default CodeEditor;
+export default SharedEditor;
