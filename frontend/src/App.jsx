@@ -4,6 +4,7 @@ import Homepage from './pages/Homepage';
 import Editor from './components/Editor';
 import NotFound from './pages/Notfound';
 import CodeEditor from './components/CodeEditor';
+import SharedEditor from './components/SharedEditor';
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Homepage />} />
         <Route path="/temp" element={<Editor />} />
+        <Route path="/temp/:shortId" element={<SharedEditor />} />
         <Route path="/code" element={<CodeEditor />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
