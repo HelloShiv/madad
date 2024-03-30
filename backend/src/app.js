@@ -7,10 +7,7 @@ const app = express();
 app.get("/", (req, res) => res.send("Express on Vercel"));
 
 app.use(
-  cors({
-    origin: process.env.CORS_ORIGIN,
-    credentials: true,
-  })
+  cors()
 );
 
 app.use(
