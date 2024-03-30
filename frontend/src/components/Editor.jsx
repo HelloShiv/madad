@@ -125,7 +125,7 @@ const CodeEditor = () => {
   const { shortId } = useParams(); // Extract shortId from URL
   const [modalVisible, setModalVisible] = useState(false);
   const [qrCodeValue, setQRCodeValue] = useState('');
-  const [frontendURL, setFrontendURL] = useState('');
+  const frontendURL = process.env.FRONTEND_URL || "https://0xmadad.vercel.app/temp";
 
   useEffect(() => {
     if (shortId) {
@@ -134,9 +134,6 @@ const CodeEditor = () => {
     }
   }, [shortId]); // Run whenever shortId changes
 
-  useEffect(() => {
-    setFrontendURL(process.env.FRONTEND_URL);
-  }, []);
 
   // Event handler for when the language selection changes
   const handleLanguageChange = value => {
@@ -166,7 +163,7 @@ const CodeEditor = () => {
   // Function to send the POST  request
   const shareCode = async () => {
     try {
-      console.log(process.env.FRONTEND_URL);
+      console.log(`${process.env.FRONTEND_URL}`);
       console.log(`${process.env.BACKEND_URL}`);
       const response = await axios.post(process.env.BACKEND_URL + '/share', {
         language: selectedLanguage,
@@ -269,13 +266,16 @@ const CodeEditor = () => {
         open={modalVisible}
         onOk={() => setModalVisible(false)}
         onCancel={() => setModalVisible(false)}
+        okButtonProps={{
+          style: { backgroundColor: '#1890ff', borderColor: '#1890ff' },
+        }}
       >
         {qrCodeValue ? ( // Conditionally render QR code when qrCodeValue is available
           <>
             <p>URL: {qrCodeValue}</p>
             <QRCode
               value={qrCodeValue}
-              size={256}
+              size={140}
               style={{ margin: '0 auto', display: 'block' }}
             />
           </>
