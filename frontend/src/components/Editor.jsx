@@ -262,6 +262,8 @@ const CodeEditor = () => {
         />
       </div>
       <Modal
+        width={"40vw"}
+        height={"40vh"}
         title="Code shared successfully"
         open={modalVisible}
         onOk={() => setModalVisible(false)}
@@ -273,11 +275,15 @@ const CodeEditor = () => {
         {qrCodeValue ? ( // Conditionally render QR code when qrCodeValue is available
           <>
             <p className='text-lg'>URL: {qrCodeValue}</p>
+            <div className='flex justify-center'>
+
             <QRCode
+              type='svg'
               value={qrCodeValue}
-              size={Math.min(window.innerWidth * 0.8, 256)}
-              style={{ margin: '0 auto', display: 'block' }}
+              size={Math.min(window.innerWidth * 0.8, 246)}
+              style={{display:'flex',justifyContent:'center'}}
             />
+            </div>
           </>
         ) : (
           <p>Loading QR code...</p>
