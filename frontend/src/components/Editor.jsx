@@ -1,6 +1,13 @@
-import React, { useState ,useEffect , useRef} from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Editor } from '@monaco-editor/react';
-import { Select, ConfigProvider, notification, FloatButton } from 'antd';
+import {
+  Select,
+  ConfigProvider,
+  notification,
+  FloatButton,
+  Modal,
+  QRCode,
+} from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 import { ShareAltOutlined } from '@ant-design/icons';
 import '../styles/editor.css';
@@ -11,7 +18,6 @@ import extensionImage from '../assets/extension.svg';
 import messageImage from '../assets/message.png';
 import axios from 'axios';
 import { useParams } from 'react-router-dom'; // Import useParams hook to extract URL parameters
-
 
 const CodeEditor = () => {
   const editorOptions = {
@@ -117,6 +123,8 @@ const CodeEditor = () => {
   const [selectedLanguage, setSelectedLanguage] = useState('plaintext');
   const [editorCode, setEditorCode] = useState('');
   const { shortId } = useParams(); // Extract shortId from URL
+  const [modalVisible, setModalVisible] = useState(false);
+  const [qrCodeValue, setQRCodeValue] = useState('');
 
   useEffect(() => {
     if (shortId) {
@@ -132,15 +140,15 @@ const CodeEditor = () => {
 
   const fetchCodeSnippet = async () => {
     try {
-      console.log(shortId , " : shortID is")
+      console.log(shortId, ' : shortID is');
       const response = await axios.get(
         `${process.env.BACKEND_URL}/getcode/${shortId}`
       );
       setEditorCode(response.data.code);
-       if (editorRef.current) {
-         editorRef.current.setValue(response.data.code); // Set editor code using Monaco Editor instance
-       }
-      console.log(response.data.code)
+      if (editorRef.current) {
+        editorRef.current.setValue(response.data.code); // Set editor code using Monaco Editor instance
+      }
+      console.log(response.data.code);
     } catch (error) {
       console.error('Error fetching code snippet:', error.message);
       notification.error({
@@ -153,6 +161,7 @@ const CodeEditor = () => {
   // Function to send the POST  request
   const shareCode = async () => {
     try {
+      console.log(process.env.FRONTEND_URL);
       console.log(`${process.env.BACKEND_URL}`);
       const response = await axios.post(process.env.BACKEND_URL + '/share', {
         language: selectedLanguage,
@@ -164,8 +173,10 @@ const CodeEditor = () => {
       const { shortId } = response.data;
       notification.success({
         message: 'Code shared successfully',
-        description: `Short ID: ${shortId}`,
+        description: `URL: ${process.env.FRONTEND_URL}/${shortId}`,
       });
+      setQRCodeValue(`${process.env.FRONTEND_URL}/${shortId}`);
+      setModalVisible(true);
     } catch (error) {
       console.error('Error sharing code:', error.message);
       notification.error({
@@ -234,9 +245,9 @@ const CodeEditor = () => {
         <Editor
           ref={editorRef}
           theme="vs-dark"
-          language={selectedLanguage} 
+          language={selectedLanguage}
           options={editorOptions}
-          onChange={(value) => setEditorCode(value)} // Update the editor code
+          onChange={value => setEditorCode(value)} // Update the editor code
         ></Editor>
 
         <FloatButton
@@ -248,6 +259,25 @@ const CodeEditor = () => {
           onClick={shareCode}
         />
       </div>
+      <Modal
+        title="Code shared successfully"
+        open={modalVisible}
+        onOk={() => setModalVisible(false)}
+        onCancel={() => setModalVisible(false)}
+      >
+        {qrCodeValue ? ( // Conditionally render QR code when qrCodeValue is available
+          <>
+            <p>URL: {qrCodeValue}</p>
+            <QRCode
+              value={qrCodeValue}
+              size={256}
+              style={{ margin: '0 auto', display: 'block' }}
+            />
+          </>
+        ) : (
+          <p>Loading QR code...</p>
+        )}
+      </Modal>
     </div>
   );
 };
