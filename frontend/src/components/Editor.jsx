@@ -9,13 +9,14 @@ import {
   QRCode,
 } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
-import { ShareAltOutlined } from '@ant-design/icons';
+import { ShareAltOutlined, LoadingOutlined } from '@ant-design/icons';
 import '../styles/editor.css';
 import fileImage from '../assets/file.svg';
 import searchImage from '../assets/search.svg';
 import branchImage from '../assets/branch.png';
 import extensionImage from '../assets/extension.svg';
 import messageImage from '../assets/message.png';
+import iconMadad from "../assets/letterm.png";
 import axios from 'axios';
 import { useParams } from 'react-router-dom'; // Import useParams hook to extract URL parameters
 
@@ -127,6 +128,7 @@ const CodeEditor = () => {
   const [qrCodeValue, setQRCodeValue] = useState('');
   const frontendURL =
     process.env.FRONTEND_URL || 'https://0xmadad.vercel.app/temp';
+  const [isLoading, setLoading] = useState(false);
 
   useEffect(() => {
     if (shortId) {
@@ -162,6 +164,7 @@ const CodeEditor = () => {
 
   // Function to send the POST  request
   const shareCode = async () => {
+    setLoading(true);
     try {
       console.log(`${process.env.FRONTEND_URL}`);
       console.log(`${process.env.BACKEND_URL}`);
@@ -185,6 +188,8 @@ const CodeEditor = () => {
         message: 'Failed to share code',
         description: 'An error occurred while sharing the code.',
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -255,15 +260,15 @@ const CodeEditor = () => {
         <FloatButton
           shape="circle"
           type="primary"
-          style={{ right: 24, bottom: 60, width: 60, height: 60 }}
-          icon=<ShareAltOutlined />
+          style={{ right: 24, bottom: 60, width: 70, height: 70 }}
+          icon={isLoading ? <LoadingOutlined spin /> : <ShareAltOutlined />}
           tooltip={<div>Share Code</div>}
           onClick={shareCode}
         />
       </div>
       <Modal
-        width={"40vw"}
-        height={"40vh"}
+        width={'40vw'}
+        height={'40vh'}
         title="Code shared successfully"
         open={modalVisible}
         onOk={() => setModalVisible(false)}
@@ -274,15 +279,15 @@ const CodeEditor = () => {
       >
         {qrCodeValue ? ( // Conditionally render QR code when qrCodeValue is available
           <>
-            <p className='text-lg'>URL: {qrCodeValue}</p>
-            <div className='flex justify-center'>
-
-            <QRCode
-              type='svg'
-              value={qrCodeValue}
-              size={Math.min(window.innerWidth * 0.8, 246)}
-              style={{display:'flex',justifyContent:'center'}}
-            />
+            <p className="text-lg">URL: {qrCodeValue}</p>
+            <div className="flex justify-center">
+              <QRCode
+                type="svg"
+                icon={iconMadad}
+                value={qrCodeValue}
+                size={Math.min(window.innerWidth * 0.8, 246)}
+                style={{ display: 'flex', justifyContent: 'center' }}
+              />
             </div>
           </>
         ) : (
