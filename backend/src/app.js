@@ -26,9 +26,11 @@ app.use(
   })
 );
 
+app.listen(process.env.EXPRESS_PORT, () => console.log(`Server ready on port ${process.env.EXPRESS_PORT}`));
+
 // routes
 import router from "./routes/user.route.js";
 
-app.use("/" , router);
+app.use("/", router);
 
 export { app };
