@@ -150,7 +150,7 @@ const CodeEditor = () => {
     }
   };
 
-  // Function to send the POST request
+  // Function to send the POST  request
   const shareCode = async () => {
     try {
       console.log(`${process.env.BACKEND_URL}`);
