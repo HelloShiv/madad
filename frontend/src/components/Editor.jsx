@@ -125,7 +125,8 @@ const CodeEditor = () => {
   const { shortId } = useParams(); // Extract shortId from URL
   const [modalVisible, setModalVisible] = useState(false);
   const [qrCodeValue, setQRCodeValue] = useState('');
-  const frontendURL = process.env.FRONTEND_URL || "https://0xmadad.vercel.app/temp";
+  const frontendURL =
+    process.env.FRONTEND_URL || 'https://0xmadad.vercel.app/temp';
 
   useEffect(() => {
     if (shortId) {
@@ -133,7 +134,6 @@ const CodeEditor = () => {
       fetchCodeSnippet();
     }
   }, [shortId]); // Run whenever shortId changes
-
 
   // Event handler for when the language selection changes
   const handleLanguageChange = value => {
@@ -272,10 +272,10 @@ const CodeEditor = () => {
       >
         {qrCodeValue ? ( // Conditionally render QR code when qrCodeValue is available
           <>
-            <p>URL: {qrCodeValue}</p>
+            <p className='text-lg'>URL: {qrCodeValue}</p>
             <QRCode
               value={qrCodeValue}
-              size={140}
+              size={Math.min(window.innerWidth * 0.8, 256)}
               style={{ margin: '0 auto', display: 'block' }}
             />
           </>
