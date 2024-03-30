@@ -125,6 +125,7 @@ const CodeEditor = () => {
   const { shortId } = useParams(); // Extract shortId from URL
   const [modalVisible, setModalVisible] = useState(false);
   const [qrCodeValue, setQRCodeValue] = useState('');
+  const [frontendURL, setFrontendURL] = useState('');
 
   useEffect(() => {
     if (shortId) {
@@ -132,6 +133,10 @@ const CodeEditor = () => {
       fetchCodeSnippet();
     }
   }, [shortId]); // Run whenever shortId changes
+
+  useEffect(() => {
+    setFrontendURL(process.env.FRONTEND_URL);
+  }, []);
 
   // Event handler for when the language selection changes
   const handleLanguageChange = value => {
@@ -173,9 +178,9 @@ const CodeEditor = () => {
       const { shortId } = response.data;
       notification.success({
         message: 'Code shared successfully',
-        description: `URL: ${process.env.FRONTEND_URL}/${shortId}`,
+        description: `URL: ${frontendURL}/${shortId}`,
       });
-      setQRCodeValue(`${process.env.FRONTEND_URL}/${shortId}`);
+      setQRCodeValue(`${frontendURL}/${shortId}`);
       setModalVisible(true);
     } catch (error) {
       console.error('Error sharing code:', error.message);
