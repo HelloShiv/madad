@@ -58,7 +58,7 @@ const Collab = () => {
             userNames.push(state.user.name);
           }
         });
-        // console.log(userNames);
+        console.log(userNames);
       });
 
       awareness.setLocalStateField('user', {
