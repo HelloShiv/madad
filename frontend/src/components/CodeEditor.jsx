@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { Editor } from '@monaco-editor/react';
 import { Select, ConfigProvider } from 'antd';
-import { DownOutlined, CaretRightFilled } from '@ant-design/icons';
+import { DownOutlined } from '@ant-design/icons';
 import { FloatButton } from 'antd';
 import {
   ResizableHandle,

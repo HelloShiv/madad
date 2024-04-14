@@ -1,17 +1,24 @@
-import React, { useState ,useEffect , useRef} from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Editor } from '@monaco-editor/react';
-import { Select, ConfigProvider, notification, FloatButton } from 'antd';
+import {
+  Select,
+  ConfigProvider,
+  notification,
+  FloatButton,
+  Modal,
+  QRCode,
+} from 'antd';
 import { DownOutlined } from '@ant-design/icons';
-import { ShareAltOutlined } from '@ant-design/icons';
+import { ShareAltOutlined, LoadingOutlined } from '@ant-design/icons';
 import '../styles/editor.css';
 import fileImage from '../assets/file.svg';
 import searchImage from '../assets/search.svg';
 import branchImage from '../assets/branch.png';
 import extensionImage from '../assets/extension.svg';
 import messageImage from '../assets/message.png';
+import iconMadad from '../assets/letterm.png';
 import axios from 'axios';
 import { useParams } from 'react-router-dom'; // Import useParams hook to extract URL parameters
-
 
 const CodeEditor = () => {
   const editorOptions = {
@@ -117,6 +124,12 @@ const CodeEditor = () => {
   const [selectedLanguage, setSelectedLanguage] = useState('plaintext');
   const [editorCode, setEditorCode] = useState('');
   const { shortId } = useParams(); // Extract shortId from URL
+  const [modalVisible, setModalVisible] = useState(false);
+  const [qrCodeValue, setQRCodeValue] = useState('');
+  const frontendURL =
+    import.meta.env.VITE_FRONTEND_URL || 'https://0xmadad.vercel.app/temp';
+    
+  const [isLoading, setLoading] = useState(false);
 
   useEffect(() => {
     if (shortId) {
@@ -132,15 +145,15 @@ const CodeEditor = () => {
 
   const fetchCodeSnippet = async () => {
     try {
-      console.log(shortId , " : shortID is")
+      console.log(shortId, ' : shortID is');
       const response = await axios.get(
         `${process.env.BACKEND_URL}/getcode/${shortId}`
       );
       setEditorCode(response.data.code);
-       if (editorRef.current) {
-         editorRef.current.setValue(response.data.code); // Set editor code using Monaco Editor instance
-       }
-      console.log(response.data.code)
+      if (editorRef.current) {
+        editorRef.current.setValue(response.data.code); // Set editor code using Monaco Editor instance
+      }
+      console.log(response.data.code);
     } catch (error) {
       console.error('Error fetching code snippet:', error.message);
       notification.error({
@@ -150,10 +163,10 @@ const CodeEditor = () => {
     }
   };
 
-  // Function to send the POST request
+  // Function to send the POST  request
   const shareCode = async () => {
+    setLoading(true);
     try {
-      console.log(`${process.env.BACKEND_URL}`);
       const response = await axios.post(process.env.BACKEND_URL + '/share', {
         language: selectedLanguage,
         code: editorCode,
@@ -164,14 +177,18 @@ const CodeEditor = () => {
       const { shortId } = response.data;
       notification.success({
         message: 'Code shared successfully',
-        description: `Short ID: ${shortId}`,
+        description: `URL: ${frontendURL}/${shortId}`,
       });
+      setQRCodeValue(`${frontendURL}/${shortId}`);
+      setModalVisible(true);
     } catch (error) {
       console.error('Error sharing code:', error.message);
       notification.error({
         message: 'Failed to share code',
         description: 'An error occurred while sharing the code.',
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -234,20 +251,48 @@ const CodeEditor = () => {
         <Editor
           ref={editorRef}
           theme="vs-dark"
-          language={selectedLanguage} 
+          language={selectedLanguage}
           options={editorOptions}
-          onChange={(value) => setEditorCode(value)} // Update the editor code
+          onChange={value => setEditorCode(value)} // Update the editor code
         ></Editor>
 
         <FloatButton
           shape="circle"
           type="primary"
-          style={{ right: 24, bottom: 60, width: 60, height: 60 }}
-          icon=<ShareAltOutlined />
+          style={{ right: 24, bottom: 60, width: 70, height: 70 }}
+          icon={isLoading ? <LoadingOutlined spin /> : <ShareAltOutlined />}
           tooltip={<div>Share Code</div>}
           onClick={shareCode}
         />
       </div>
+      <Modal
+        width={'40vw'}
+        height={'40vh'}
+        title="Code shared successfully"
+        open={modalVisible}
+        onOk={() => setModalVisible(false)}
+        onCancel={() => setModalVisible(false)}
+        okButtonProps={{
+          style: { backgroundColor: '#1890ff', borderColor: '#1890ff' },
+        }}
+      >
+        {qrCodeValue ? ( // Conditionally render QR code when qrCodeValue is available
+          <>
+            <p className="text-lg">URL: {qrCodeValue}</p>
+            <div className="flex justify-center">
+              <QRCode
+                type="svg"
+                icon={iconMadad}
+                value={qrCodeValue}
+                size={Math.min(window.innerWidth * 0.8, 246)}
+                style={{ display: 'flex', justifyContent: 'center' }}
+              />
+            </div>
+          </>
+        ) : (
+          <p>Loading QR code...</p>
+        )}
+      </Modal>
     </div>
   );
 };

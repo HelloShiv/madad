@@ -6,7 +6,10 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   define: {
     'process.env.BACKEND_URL': JSON.stringify(
-      process.env.BACKEND_URL || 'http://localhost:8000'
+      process.env.BACKEND_URL || 'http://localhost:8000',
+    ),
+    'process.env.FRONTEND': JSON.stringify(
+      process.env.FRONTEND_URL || 'http://0xmadad.vercel.app.vite',
     ),
   },
   plugins: [react()],
