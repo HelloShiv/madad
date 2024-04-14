@@ -2,12 +2,15 @@ import React, { useState, useRef } from 'react';
 import { Editor } from '@monaco-editor/react';
 import { Select, ConfigProvider } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
-import { FloatButton } from 'antd';
+import { Modal, Input, Button, Checkbox } from 'antd';
 import {
   ResizableHandle,
   ResizablePanelGroup,
   ResizablePanel,
 } from './ui/resizable';
+import * as Y from 'yjs';
+import { WebrtcProvider } from 'y-webrtc';
+import { MonacoBinding } from 'y-monaco';
 import '../styles/codeeditor.css';
 import fileImage from '../assets/file.svg';
 import searchImage from '../assets/search.svg';
@@ -15,12 +18,65 @@ import branchImage from '../assets/branch.png';
 import extensionImage from '../assets/extension.svg';
 import messageImage from '../assets/message.png';
 import Output from './Output';
-import { CODE_SNIPPETS } from '../constants';
 
-const CodeEditor = () => {
-  const editorRef = useRef();
-  const [isRunning, setIsRunning] = useState(false); // State to track whether code is running
+const { TextArea } = Input;
 
+const Collab = () => {
+  const editorRef = useRef(null);
+    const [isRunning, setIsRunning] = useState(false); // State to track whether code is running
+    const [isModalOpen, setIsModalOpen] = useState(true);
+    const [roomId, setRoomId] = useState('');
+    const [userName, setUserName] = useState('ayam');
+    const [password, setPassword] = useState('');
+    const [isPasswordProtected, setIsPasswordProtected] = useState(false);
+
+    const handleJoinRoom = () => {
+      // Hide modal and initialize editor
+      setIsModalOpen(false);
+      initializeEditor();
+    };
+
+    const initializeEditor = () => {
+      const doc = new Y.Doc();
+      const provider = new WebrtcProvider(roomId, doc, {
+        signaling: [import.meta.env.VITE_WS],
+        password: isPasswordProtected ? password : undefined, // Set password if it's enabled
+      });
+      const type = doc.getText('monaco');
+      const binding = new MonacoBinding(
+        type,
+        editorRef.current.getModel(),
+        new Set([editorRef.current]),
+        provider.awareness
+      );
+      const awareness = provider.awareness;
+
+      awareness.on('change', changes => {
+        const userNames = [];
+        Array.from(awareness.getStates().values()).forEach(state => {
+          if (state.user && state.user.name) {
+            userNames.push(state.user.name);
+          }
+        });
+        // console.log(userNames);
+      });
+
+      awareness.setLocalStateField('user', {
+        name: userName,
+        color: '#ffb61e',
+      });
+
+      console.log(provider.awareness);
+    };
+
+    const handleCancel = () => {
+      setIsModalOpen(false);
+    };
+
+    const handlePasswordToggle = checked => {
+      setIsPasswordProtected(checked);
+    };
+    
   const onMount = editor => {
     editorRef.current = editor;
     editor.focus();
@@ -110,8 +166,6 @@ const CodeEditor = () => {
   ];
 
   const [selectedLanguage, setSelectedLanguage] = useState('plaintext');
-  console.log('selected language ', selectedLanguage);
-  console.log(CODE_SNIPPETS[selectedLanguage]);
   // Event handler for when the language selection changes
   const handleLanguageChange = value => {
     setSelectedLanguage(value);
@@ -176,13 +230,60 @@ const CodeEditor = () => {
 
         <ResizablePanelGroup direction="vertical">
           <ResizablePanel>
-            <Editor
-              theme="vs-dark"
-              language={selectedLanguage === 'c++' ? 'cpp' : selectedLanguage}
-              value={CODE_SNIPPETS[selectedLanguage]}
-              options={editorOptions}
-              onMount={onMount}
-            ></Editor>
+            <div>
+              <Modal
+                title="Join Room"
+                open={isModalOpen}
+                onCancel={handleCancel}
+                footer={[
+                  <Button key="cancel" onClick={handleCancel}>
+                    Cancel
+                  </Button>,
+                  <Button key="join" type="primary" onClick={handleJoinRoom}>
+                    Join
+                  </Button>,
+                ]}
+              >
+                <Input
+                  placeholder="Enter Room ID"
+                  value={roomId}
+                  onChange={e => setRoomId(e.target.value)}
+                />
+                <br />
+                <br />
+                <TextArea
+                  placeholder="Enter Your Name"
+                  value={userName}
+                  onChange={e => setUserName(e.target.value)}
+                  autoSize={{ minRows: 1, maxRows: 2 }}
+                />
+                <br />
+                <br />
+                <Input.Password
+                  placeholder="Enter Password (optional)"
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  disabled={!isPasswordProtected}
+                />
+                <br />
+                <br />
+                <Checkbox
+                  onChange={e => handlePasswordToggle(e.target.checked)}
+                >
+                  Password Protected
+                </Checkbox>
+              </Modal>
+              <Editor
+                height="100vh"
+                width="100vw"
+                theme="vs-dark"
+                language={selectedLanguage === 'c++' ? 'cpp' : selectedLanguage}
+                options={editorOptions}
+                onMount={(editor, monaco) => {
+                  editorRef.current = editor;
+                }}
+              />
+            </div>
           </ResizablePanel>
           <ResizableHandle withHandle />
           <ResizablePanel defaultSize={13} minSize={4}>
@@ -201,4 +302,4 @@ const CodeEditor = () => {
   );
 };
 
-export default CodeEditor;
+export default Collab;

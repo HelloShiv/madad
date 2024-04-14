@@ -16,7 +16,7 @@ import searchImage from '../assets/search.svg';
 import branchImage from '../assets/branch.png';
 import extensionImage from '../assets/extension.svg';
 import messageImage from '../assets/message.png';
-import iconMadad from "../assets/letterm.png";
+import iconMadad from '../assets/letterm.png';
 import axios from 'axios';
 import { useParams } from 'react-router-dom'; // Import useParams hook to extract URL parameters
 
@@ -127,7 +127,8 @@ const CodeEditor = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [qrCodeValue, setQRCodeValue] = useState('');
   const frontendURL =
-    process.env.FRONTEND_URL || 'https://0xmadad.vercel.app/temp';
+    import.meta.env.VITE_FRONTEND_URL || 'https://0xmadad.vercel.app/temp';
+    
   const [isLoading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -166,8 +167,6 @@ const CodeEditor = () => {
   const shareCode = async () => {
     setLoading(true);
     try {
-      console.log(`${process.env.FRONTEND_URL}`);
-      console.log(`${process.env.BACKEND_URL}`);
       const response = await axios.post(process.env.BACKEND_URL + '/share', {
         language: selectedLanguage,
         code: editorCode,
