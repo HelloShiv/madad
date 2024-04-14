@@ -178,6 +178,7 @@ const CodeEditor = () => {
           <ResizablePanel>
             <Editor
               theme="vs-dark"
+              
               language={selectedLanguage === 'c++' ? 'cpp' : selectedLanguage}
               value={CODE_SNIPPETS[selectedLanguage]}
               options={editorOptions}
