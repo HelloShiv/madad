@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef , useEffect} from 'react';
 import { Editor } from '@monaco-editor/react';
 import { Select, ConfigProvider } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
@@ -239,7 +239,12 @@ const Collab = () => {
                   <Button key="cancel" onClick={handleCancel}>
                     Cancel
                   </Button>,
-                  <Button key="join" type="primary" onClick={handleJoinRoom}>
+                  <Button
+                    key="join"
+                    type="primary"
+                    onClick={handleJoinRoom}
+                    className="bg-blue-500"
+                  >
                     Join
                   </Button>,
                 ]}

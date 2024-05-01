@@ -1,4 +1,6 @@
 import GridLines from '../components/GridLines';
+import {ArrowRightOutlined} from  '@ant-design/icons'; 
+import { Link } from 'react-router-dom';
 
 function Homepage() {
   return (
@@ -23,6 +25,34 @@ function Homepage() {
           >
             The Collaborative IDE
           </p>
+          <div className="buttons-coll flex gap-4 pt-3">
+            <Link to="/temp">
+              <button className="p-[3px] relative ">
+                <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg" />
+                <div className="px-8 py-2  bg-black rounded-[6px]  relative group transition duration-200 text-white hover:bg-transparent">
+                  TempShare <ArrowRightOutlined />
+                </div>
+              </button>
+            </Link>
+
+            <Link to="/code">
+              <button className="p-[3px] relative ">
+                <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg" />
+                <div className="px-8 py-2  bg-black rounded-[6px]  relative group transition duration-200 text-white hover:bg-transparent">
+                  Code Editor + Online Compiler <ArrowRightOutlined />
+                </div>
+              </button>
+            </Link>
+
+            <Link to="/collab">
+              <button className="p-[3px] relative ">
+                <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg" />
+                <div className="px-8 py-2  bg-black rounded-[6px]  relative group transition duration-200 text-white hover:bg-transparent">
+                  Collaborative IDE <ArrowRightOutlined />
+                </div>
+              </button>
+            </Link>
+          </div>
         </p>
 
         <GridLines />
